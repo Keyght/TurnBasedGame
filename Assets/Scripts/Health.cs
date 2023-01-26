@@ -3,13 +3,14 @@ using UnityEngine;
 
 public class Health
 {
-    private const int _maxHP = 10;
+    private int _maxHP;
     private int _currentHP;
-    public event Action<float> HealthChanged;
+    public event Action<int, float> HealthChanged;
 
-    public Health()
+    public Health(int maxHP)
     {
-        _currentHP = _maxHP;
+        _maxHP = maxHP;
+        _currentHP = maxHP;
     }
 
     public void ChangeHealth(int value)
@@ -23,13 +24,13 @@ public class Health
         else
         {
             float currentHealthAsPercantage = (float) _currentHP / _maxHP;
-            HealthChanged?.Invoke(currentHealthAsPercantage);
+            HealthChanged?.Invoke(_currentHP, currentHealthAsPercantage);
         }
     }
 
     public void Death()
     {
-        HealthChanged?.Invoke(0);
+        HealthChanged?.Invoke(0, 0);
     }
 
     public int GetCurrentHP()

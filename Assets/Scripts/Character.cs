@@ -2,27 +2,51 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviour, IHealthCange
 {
+    [SerializeField]
+    private int _maxHP = 10;
+
     private Health _health;
     private Animator _animCtrl;
 
     private void Awake()
     {
-        _health = new Health();
+        _health = new Health(_maxHP);
+    }
+    void Start()
+    {
+        FlipOpponnents();
+
+        _health.HealthChanged += OnHealthChanged;
+        _animCtrl = GetComponent<Animator>();
     }
 
-    private void Update()
+    private void FlipOpponnents()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (transform.position.z > 0)
         {
-            _health.ChangeHealth(-1);
+            transform.Rotate(0f, 180.0f, 0.0f, Space.Self);
+            transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
-    void Start()
+    public void OnHealthChanged(int currentHealth, float currentHealthAsPercantage)
     {
-        _animCtrl = GetComponent<Animator>();
+        if (currentHealth == 0)
+        {
+            _animCtrl.SetBool("isDead", true);
+            _animCtrl.SetTrigger("Death");
+        }
+        else
+        {
+            _animCtrl.SetBool("isDead", false);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        _health.HealthChanged -= OnHealthChanged;
     }
 
     public Health GetHealth()
