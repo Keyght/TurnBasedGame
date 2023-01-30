@@ -10,29 +10,21 @@ public class ManagerOfGame : MonoBehaviour
     private Button _endTurnButton;
 
     private Game _currentGame;
-    private int _turn;
-    private bool _isPlayerTurn
-    {
-        get
-        {
-            return _turn % 2 == 0;
-        }
-    }
+    ManagerOfTurns _managerOfTurns;
 
     private void Awake()
     {
         _currentGame = new Game();
+        _managerOfTurns = new ManagerOfTurns(_endTurnButton);
     }
 
     private void Start()
     {
-        _turn = 0;
-
-        InititalizeSides(_currentGame.Allies, 3, true);
-        InititalizeSides(_currentGame.Enemies, 4, false);
+        InstantCharacters(_currentGame.Allies, 2, true);
+        InstantCharacters(_currentGame.Enemies, 3, false);
     }
 
-    private void InititalizeSides(List<GameObject> list, int count, bool isAllies)
+    private void InstantCharacters(List<GameObject> list, int count, bool isAllies)
     {
         int side = isAllies ? 1 : -1; 
         for (int i = 0; i < count; i++)
@@ -42,11 +34,9 @@ public class ManagerOfGame : MonoBehaviour
         }
     }
 
-    public void ChangeTurn()
+    public void OnEndButtonClick()
     {
-        _turn++;
-
-        _endTurnButton.interactable = _isPlayerTurn;
+        _managerOfTurns.ChangeTurn();
     }
 
 }
