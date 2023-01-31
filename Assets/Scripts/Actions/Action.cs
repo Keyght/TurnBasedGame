@@ -1,17 +1,21 @@
 using UnityEngine;
 
-public class Action : MonoBehaviour
+public abstract class Action : MonoBehaviour
 {
+    public Health Health;
     [SerializeField]
-    private LineRenderer _line;
+    private GameObject _linePrefab;
 
+    private LineRenderer _line;
     private Camera _mainCamera;
     private Vector3 _mouseOffset;
     private float _mouseZCoord;
-    private float _dragSensivity = 2f;
+    private float _dragSensivity = 1.2f;
     private Vector3 _firstPos;
     private Renderer _meshRenderer;
     private Transform _childOther;
+
+    public abstract void PerformAction();
 
     private void Awake()
     {
@@ -30,6 +34,9 @@ public class Action : MonoBehaviour
 
     private void OnMouseDown()
     {
+        Cursor.visible = false;
+        _line = Instantiate(_linePrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
+
         _mouseZCoord = _mainCamera.WorldToScreenPoint(transform.position).z;
         _mouseOffset = transform.position - GetMouseWorldPosition();
 
@@ -43,14 +50,15 @@ public class Action : MonoBehaviour
     private void OnMouseDrag()
     {
         Vector3 newPos = (GetMouseWorldPosition() + _mouseOffset) * _dragSensivity;
-        transform.position = new Vector3(newPos.x, _firstPos.y, newPos.y);
+        transform.position = new Vector3(newPos.x, _firstPos.y, newPos.z);
 
         _line.SetPosition(1, transform.position);
     }
 
     private void OnMouseUp()
     {
-        _line.SetPosition(0, Vector3.zero);
-        _line.SetPosition(1, Vector3.zero);
+        gameObject.AddComponent<Rigidbody>();
+        Destroy(_line.gameObject);
+        Cursor.visible = true;
     }
 }

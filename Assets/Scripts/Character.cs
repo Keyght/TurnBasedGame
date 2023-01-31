@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Character : MonoBehaviour, IHealthCange
 {
     [SerializeField]
     private int _maxHP = 10;
+    [SerializeField]
+    private GameObject _hPCanvas;
 
     private Health _health;
     private Animator _animCtrl;
@@ -27,7 +27,7 @@ public class Character : MonoBehaviour, IHealthCange
         if (transform.position.z > 0)
         {
             transform.Rotate(0f, 180.0f, 0.0f, Space.Self);
-            transform.localScale = new Vector3(-1, 1, 1);
+            _hPCanvas.transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
@@ -44,13 +44,23 @@ public class Character : MonoBehaviour, IHealthCange
         }
     }
 
-    private void OnDestroy()
+    private void OnCollisionEnter(Collision collision)
     {
-        _health.HealthChanged -= OnHealthChanged;
+        if (collision.gameObject.TryGetComponent(out Action action))
+        {
+            action.Health = _health;
+            action.PerformAction();
+            Destroy(collision.gameObject);
+        }
     }
 
     public Health GetHealth()
     {
         return _health;
+    }
+
+    private void OnDestroy()
+    {
+        _health.HealthChanged -= OnHealthChanged;
     }
 }

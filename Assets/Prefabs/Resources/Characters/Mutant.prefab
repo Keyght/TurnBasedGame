@@ -832,6 +832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHP: 10
+  _hPCanvas: {fileID: 1232058667340009339}
 --- !u!65 &822226555618928863
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -843,7 +844,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2, y: 2, z: 1}
+  m_Size: {x: 2, y: 2, z: 1.5}
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &6357100592564773378
 GameObject:
@@ -1516,5 +1517,10 @@ PrefabInstance:
 --- !u!224 &763057932905676304 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4569814086532450303, guid: e9291639a69e91e4d94d4b4468c8f56f, type: 3}
+  m_PrefabInstance: {fileID: 3890494998142335471}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1232058667340009339 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2658520443476719252, guid: e9291639a69e91e4d94d4b4468c8f56f, type: 3}
   m_PrefabInstance: {fileID: 3890494998142335471}
   m_PrefabAsset: {fileID: 0}

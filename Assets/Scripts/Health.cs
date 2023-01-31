@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public class Health
 {
@@ -20,6 +19,10 @@ public class Health
         if (_currentHP <= 0)
         {
             Death();
+        }
+        else if (_currentHP > _maxHP)
+        {
+            _currentHP = _maxHP;
         }
         else
         {
