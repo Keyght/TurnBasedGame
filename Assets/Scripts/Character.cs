@@ -6,6 +6,8 @@ public class Character : MonoBehaviour, IHealthCange
     private int _maxHP = 10;
     [SerializeField]
     private GameObject _hPCanvas;
+    [SerializeField]
+    private Transform _actionPoint;
 
     private Health _health;
     private Animator _animCtrl;
@@ -13,25 +15,25 @@ public class Character : MonoBehaviour, IHealthCange
     private void Awake()
     {
         _health = new Health(_maxHP);
+
+        FlipOpponnents();
     }
     void Start()
     {
-        FlipOpponnents();
-
         _health.HealthChanged += OnHealthChanged;
         _animCtrl = GetComponent<Animator>();
     }
 
     private void FlipOpponnents()
     {
-        if (transform.position.z > 0)
+        if (isEnemy(transform))
         {
             transform.Rotate(0f, 180.0f, 0.0f, Space.Self);
             _hPCanvas.transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
-    public void OnHealthChanged(int currentHealth, float currentHealthAsPercantage)
+    public void OnHealthChanged(int currentHealth, int currentAdditionalHealth, float currentHealthAsPercantage)
     {
         if (currentHealth == 0)
         {
@@ -54,9 +56,19 @@ public class Character : MonoBehaviour, IHealthCange
         }
     }
 
+    public static bool isEnemy(Transform curTransform)
+    {
+        return curTransform.position.z > 0 ? true: false;
+    }
+
     public Health GetHealth()
     {
         return _health;
+    }
+
+    public Transform GetActionPoint()
+    {
+        return _actionPoint;
     }
 
     private void OnDestroy()

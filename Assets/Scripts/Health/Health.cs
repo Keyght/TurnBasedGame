@@ -4,16 +4,31 @@ public class Health
 {
     private int _maxHP;
     private int _currentHP;
-    public event Action<int, float> HealthChanged;
+    private int _additionalHP;
+    public event Action<int, int, float> HealthChanged;
 
     public Health(int maxHP)
     {
         _maxHP = maxHP;
         _currentHP = maxHP;
+        _additionalHP = 0;
     }
 
-    public void ChangeHealth(int value)
+    public void ChangeHealth(int value, bool isDamage)
     {
+        if (isDamage)
+        {
+            if (_additionalHP >= -1 * value)
+            {
+                _additionalHP += value;
+            }
+            else
+            {
+                value += _additionalHP;
+                _additionalHP = 0;
+            }
+        }
+
         _currentHP += value;
         
         if (_currentHP <= 0)
@@ -27,13 +42,13 @@ public class Health
         else
         {
             float currentHealthAsPercantage = (float) _currentHP / _maxHP;
-            HealthChanged?.Invoke(_currentHP, currentHealthAsPercantage);
+            HealthChanged?.Invoke(_currentHP, _additionalHP, currentHealthAsPercantage);
         }
     }
 
     public void Death()
     {
-        HealthChanged?.Invoke(0, 0);
+        HealthChanged?.Invoke(0, 0, 0);
     }
 
     public int GetCurrentHP()

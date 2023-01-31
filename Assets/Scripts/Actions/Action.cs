@@ -5,15 +5,17 @@ public abstract class Action : MonoBehaviour
     public Health Health;
     [SerializeField]
     private GameObject _linePrefab;
+    [SerializeField]
+    private float _dragSensivity = 1.2f;
 
     private LineRenderer _line;
     private Camera _mainCamera;
     private Vector3 _mouseOffset;
     private float _mouseZCoord;
-    private float _dragSensivity = 1.2f;
     private Vector3 _firstPos;
     private Renderer _meshRenderer;
     private Transform _childOther;
+    private bool _isDraggable = false;
 
     public abstract void PerformAction();
 
@@ -22,6 +24,11 @@ public abstract class Action : MonoBehaviour
         _mainCamera = Camera.main;
         _meshRenderer = GetComponent<Renderer>();
         _childOther = transform.GetChild(0);
+    }
+
+    private void Start()
+    {
+        if (!Character.isEnemy(transform)) _isDraggable = true;
     }
 
     private Vector3 GetMouseWorldPosition()
@@ -34,6 +41,8 @@ public abstract class Action : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!_isDraggable) return;
+
         Cursor.visible = false;
         _line = Instantiate(_linePrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
 
@@ -49,6 +58,8 @@ public abstract class Action : MonoBehaviour
 
     private void OnMouseDrag()
     {
+        if (!_isDraggable) return;
+
         Vector3 newPos = (GetMouseWorldPosition() + _mouseOffset) * _dragSensivity;
         transform.position = new Vector3(newPos.x, _firstPos.y, newPos.z);
 
@@ -57,8 +68,21 @@ public abstract class Action : MonoBehaviour
 
     private void OnMouseUp()
     {
+        if (!_isDraggable) return;
+
         gameObject.AddComponent<Rigidbody>();
         Destroy(_line.gameObject);
         Cursor.visible = true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Floor"))
+        {
+            Destroy(gameObject.GetComponent<Rigidbody>());
+            transform.position = _firstPos;
+            _meshRenderer.enabled = true;
+            _childOther.gameObject.SetActive(true);
+        }
     }
 }

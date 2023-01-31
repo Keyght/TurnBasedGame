@@ -9,6 +9,8 @@ public class HealthBar : MonoBehaviour, IHealthCange
     [SerializeField]
     private TextMeshProUGUI _healthCount;
     [SerializeField]
+    private TextMeshProUGUI _additionalHealthCount;
+    [SerializeField]
     private Gradient _gradient;
 
     private Character _character;
@@ -22,9 +24,10 @@ public class HealthBar : MonoBehaviour, IHealthCange
         _health.HealthChanged += OnHealthChanged;
     }
 
-    public void OnHealthChanged(int currentHealth, float currentHealthAsPercantage)
+    public void OnHealthChanged(int currentHealth, int currentAdditionalHealth, float currentHealthAsPercantage)
     {
         _healthCount.text = currentHealth.ToString();
+        _additionalHealthCount.text = currentAdditionalHealth.ToString();
         _healthCount.color = _gradient.Evaluate(currentHealthAsPercantage);
 
         _healthBarFilling.fillAmount = currentHealthAsPercantage;

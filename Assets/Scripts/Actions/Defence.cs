@@ -7,6 +7,6 @@ public class Defence : Action
 
     public override void PerformAction()
     {
-        Health.ChangeHealth(_defenceValue);
+        Health.ChangeHealth(_defenceValue, false);
     }
 }

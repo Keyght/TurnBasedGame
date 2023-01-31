@@ -1,12 +1,9 @@
 using UnityEngine;
 
-public class Attack : Action
+public class Attack : Damaging
 {
-    [SerializeField]
-    private int _attackValue = -3;
-
     public override void PerformAction()
     {
-        Health.ChangeHealth(_attackValue);
+        Health.ChangeHealth(_attackValue, true);
     }
 }
