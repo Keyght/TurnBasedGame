@@ -22,7 +22,7 @@ public class Health
 
     public void ChangeHealth(int value, bool isDamage)
     {
-        if (isDamage)
+        if (isDamage && _additionalHP != 0)
         {
             if (_additionalHP >= -1 * value)
             {
@@ -41,6 +41,7 @@ public class Health
         
         if (_currentHP <= 0)
         {
+            _currentHP = 0;
             Death();
         }
         else if (_currentHP > _maxHP)

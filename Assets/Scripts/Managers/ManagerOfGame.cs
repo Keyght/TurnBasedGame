@@ -18,17 +18,23 @@ public class ManagerOfGame : MonoBehaviour
     private static ManagerOfGame _instance;
     private List<GameObject> _charPrefabs;
     private Game _currentGame;
+    private ManagerOfTurns _managerOfTurns;
 
     private void Awake()
     {
         _instance = this;
+        _managerOfTurns = GetComponent<ManagerOfTurns>();
 
         CharManager.Init();
         ActionManager.Init();
+        _charPrefabs = CharManager.PrefabManager.AllPrefabs;
 
         _currentGame = new Game();
+        InitializeGame();
+    }
 
-        _charPrefabs = CharManager.PrefabManager.AllPrefabs;
+    private void InitializeGame()
+    {
         InstantCharacters(_currentGame.Allies, 2, true);
         InstantCharacters(_currentGame.Enemies, 3, false);
     }
@@ -41,6 +47,26 @@ public class ManagerOfGame : MonoBehaviour
             var currChar = Instantiate(_charPrefabs[Random.Range(0, _charPrefabs.Count)], new Vector3(-4f + i * 3, 0, -5 * side), Quaternion.identity);
             list.Add(currChar);
         }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            DestroyCurrentChars(_currentGame.Allies);
+            DestroyCurrentChars(_currentGame.Enemies);
+            InitializeGame();
+            _managerOfTurns.RestartTurns();
+        }
+    }
+
+    private void DestroyCurrentChars(List<GameObject> list)
+    {
+        foreach (var character in list)
+        {
+            Destroy(character);
+        }
+        list.Clear();
     }
 
     public static ManagerOfGame GetInstance()

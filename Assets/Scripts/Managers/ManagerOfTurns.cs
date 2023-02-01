@@ -31,7 +31,7 @@ public class ManagerOfTurns : MonoBehaviour
     {
         get
         {
-            return _turn % 2 == 0;
+            return _turn % 2 != 0;
         }
     }
 
@@ -42,11 +42,26 @@ public class ManagerOfTurns : MonoBehaviour
 
     private void Start()
     {
-        _turn = -1;
+        _turn = 0;
         _actionPrefabs = ActionManager.PrefabManager.AllPrefabs;
         _attackActionPrefabs = GetAttackingPrefabs();
 
         //StartCoroutine(TurnFunction());
+        ChangeTurn();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (_endTurnButton.interactable) _endTurnButton.onClick.Invoke();
+        }
+    }
+
+    public void RestartTurns()
+    {
+        _turn = 0;
+        ClearActions();        
         ChangeTurn();
     }
 
@@ -110,12 +125,18 @@ public class ManagerOfTurns : MonoBehaviour
         List<GameObject> attackingActions = new List<GameObject>();
         foreach (var pref in _actionPrefabs)
         {
-            if (pref.TryGetComponent(out Damaging damaging))
+            if (pref.GetComponent<Action>().Flag == Flag.ATTACKING)
             {
-                attackingActions.Add(damaging.gameObject);
+                attackingActions.Add(pref);
             }
         }
         return attackingActions;
+    }
+
+    private void ClearActions()
+    {
+        _currentTurn.AllyActions.Clear();
+        _currentTurn.EnemyActions.Clear();
     }
 
     public void OnEndButtonClick()

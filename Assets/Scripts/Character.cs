@@ -35,7 +35,7 @@ public class Character : MonoBehaviour, IHealthCange
 
     private void FlipOpponnents()
     {
-        if (isEnemy(transform))
+        if (isEnemy(transform.position))
         {
             transform.Rotate(0f, 180.0f, 0.0f, Space.Self);
             _hPCanvas.transform.localScale = new Vector3(-1, 1, 1);
@@ -59,15 +59,19 @@ public class Character : MonoBehaviour, IHealthCange
     {
         if (collision.gameObject.TryGetComponent(out Action action))
         {
-            action.Character = this;
-            action.PerformAction();
-            Destroy(collision.gameObject);
+            bool performable;
+            action.SetTarget(this, out performable);
+            if (performable)
+            {
+                action.PerformAction();
+                Destroy(collision.gameObject);
+            }
         }
-    }
+    } 
 
-    public static bool isEnemy(Transform curTransform)
+    public static bool isEnemy(Vector3 currPos)
     {
-        return curTransform.position.z > 0 ? true: false;
+        return currPos.z > 0 ? true: false;
     }
 
     public Health GetHealth()

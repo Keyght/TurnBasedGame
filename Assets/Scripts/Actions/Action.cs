@@ -1,13 +1,21 @@
 using UnityEngine;
 
+public enum Flag
+{
+    ATTACKING,
+    HEALING,
+    DEFENDING
+}
+
 public abstract class Action : MonoBehaviour
 {
-    public Character Character;
+    public Flag Flag;
     [SerializeField]
     private GameObject _linePrefab;
     [SerializeField]
     private float _dragSensivity = 1.2f;
 
+    protected Character _target;
     private LineRenderer _line;
     private Camera _mainCamera;
     private Vector3 _mouseOffset;
@@ -15,7 +23,9 @@ public abstract class Action : MonoBehaviour
     private Vector3 _firstPos;
     private Renderer _meshRenderer;
     private Transform _childOther;
-    private bool _isDraggable = false;
+    protected bool _isDraggable = false;
+    protected bool _isSelfTargeted = false;
+    protected bool _isEnemyTargeted = false;
 
     public abstract void PerformAction();
 
@@ -26,9 +36,9 @@ public abstract class Action : MonoBehaviour
         _childOther = transform.GetChild(0);
     }
 
-    private void Start()
+    protected void Start()
     {
-        if (!Character.isEnemy(transform)) _isDraggable = true;
+        if (!Character.isEnemy(transform.position)) _isDraggable = true;
     }
 
     private Vector3 GetMouseWorldPosition()
@@ -75,14 +85,54 @@ public abstract class Action : MonoBehaviour
         Cursor.visible = true;
     }
 
+    public void SetTarget(Character character, out bool performable)
+    {
+        if (_isSelfTargeted)
+        {
+            if (character.gameObject.Equals(transform.parent.gameObject))
+            {
+                _target = character;
+                performable = true;
+            }
+            else
+            {
+                ResetAction();
+                performable = false;
+            }
+        }
+        else if (_isEnemyTargeted)
+        {
+            if (Character.isEnemy(character.transform.position))
+            {
+                _target = character;
+                performable = true;
+            }
+            else
+            {
+                ResetAction();
+                performable = false;
+            }
+        }
+        else
+        {
+            performable = false;
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Floor"))
         {
-            Destroy(gameObject.GetComponent<Rigidbody>());
-            transform.position = _firstPos;
-            _meshRenderer.enabled = true;
-            _childOther.gameObject.SetActive(true);
+            ResetAction();
         }
+    }
+
+    private void ResetAction()
+    {
+        Destroy(gameObject.GetComponent<Rigidbody>());
+        transform.position = _firstPos;
+        transform.rotation = Quaternion.identity;
+        _meshRenderer.enabled = true;
+        _childOther.gameObject.SetActive(true);
     }
 }
