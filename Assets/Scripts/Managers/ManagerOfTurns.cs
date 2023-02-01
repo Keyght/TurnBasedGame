@@ -25,7 +25,7 @@ public class ManagerOfTurns : MonoBehaviour
     private Turn _currentTurn;
     private List<GameObject> _actionPrefabs;
     private List<GameObject> _attackActionPrefabs;
-    
+    private Game _currentGame;
 
     private bool _isPlayerTurn
     {
@@ -38,6 +38,7 @@ public class ManagerOfTurns : MonoBehaviour
     private void Awake()
     {
         _currentTurn = new Turn();
+
     }
 
     private void Start()
@@ -46,7 +47,6 @@ public class ManagerOfTurns : MonoBehaviour
         _actionPrefabs = ActionManager.PrefabManager.AllPrefabs;
         _attackActionPrefabs = GetAttackingPrefabs();
 
-        //StartCoroutine(TurnFunction());
         ChangeTurn();
     }
 
@@ -65,33 +65,22 @@ public class ManagerOfTurns : MonoBehaviour
         ChangeTurn();
     }
 
-    private IEnumerator TurnFunction()
-    {
-        if (_isPlayerTurn)
-        {
-            yield return new WaitForSeconds(1);
-        }
-        else
-        {
-            yield return new WaitForSeconds(1);
-        }
-        ChangeTurn();
-    }
-
     public void ChangeTurn()
     {
-        //StopAllCoroutines();
         _turn++;
 
         _endTurnButton.interactable = _isPlayerTurn;
 
         if (_isPlayerTurn)
         {
-            var currentGame = ManagerOfGame.GetInstance().GetCurrentGame();
-            CreateActions(currentGame.Allies, _currentTurn.AllyActions, true);
-            CreateActions(currentGame.Enemies, _currentTurn.EnemyActions, false);
+            ClearActions();
+            CreateActions(_currentGame.Allies, _currentTurn.AllyActions, true);
         }
-        //StartCoroutine(TurnFunction());
+        else
+        {
+            ClearActions();
+            CreateActions(_currentGame.Enemies, _currentTurn.EnemyActions, false);
+        }
     }
 
     private void CreateActions(List<GameObject> charList, List<GameObject> actionList, bool isAlly)
@@ -115,9 +104,34 @@ public class ManagerOfTurns : MonoBehaviour
         }
     }
 
-    private void EnemyTurn()
+    private IEnumerator EnemyTurn(float sec)
     {
+        yield return new WaitForSeconds(sec);
 
+        foreach (var act in _currentTurn.EnemyActions)
+        {
+            var target = DefineTargetForEnemy();
+            target.PerformingAction(act.GetComponent<Action>(), act);
+        }
+
+        ChangeTurn();
+    }
+
+    private Character DefineTargetForEnemy()
+    {
+        foreach (var pers in _currentGame.Allies)
+        {
+            var character = pers.GetComponent<Character>();
+            if (character.IsDead)
+            {
+                continue;
+            }
+            else
+            {
+                return character;
+            }
+        }
+        return null;
     }
 
     private List<GameObject> GetAttackingPrefabs()
@@ -135,12 +149,26 @@ public class ManagerOfTurns : MonoBehaviour
 
     private void ClearActions()
     {
+        foreach (var act in _currentTurn.AllyActions)
+        {
+            Destroy(act);
+        }
         _currentTurn.AllyActions.Clear();
+        foreach (var act in _currentTurn.EnemyActions)
+        {
+            Destroy(act);
+        }
         _currentTurn.EnemyActions.Clear();
     }
 
     public void OnEndButtonClick()
     {
         ChangeTurn();
+        StartCoroutine(EnemyTurn(3));
+    }
+
+    public void SetGame(Game game)
+    {
+        _currentGame = game;
     }
 }

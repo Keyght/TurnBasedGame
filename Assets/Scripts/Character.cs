@@ -9,6 +9,7 @@ public enum Effect
 
 public class Character : MonoBehaviour, IHealthCange
 {
+    public bool IsDead = false;
     public Dictionary<Effect, int> Effects;
     [SerializeField]
     private int _maxHP = 10;
@@ -46,28 +47,36 @@ public class Character : MonoBehaviour, IHealthCange
     {
         if (currentHealth == 0)
         {
+            IsDead = true;
             _animCtrl.SetBool("isDead", true);
             _animCtrl.SetTrigger("Death");
         }
         else
         {
+            IsDead = false;
             _animCtrl.SetBool("isDead", false);
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.TryGetComponent(out Action action))
+        var actionObject = collision.gameObject;
+        if (actionObject.TryGetComponent(out Action action))
         {
-            bool performable;
-            action.SetTarget(this, out performable);
-            if (performable)
-            {
-                action.PerformAction();
-                Destroy(collision.gameObject);
-            }
+            PerformingAction(action, actionObject);
         }
     } 
+
+    public void PerformingAction(Action action, GameObject actionObject)
+    {
+        bool performable;
+        action.SetTarget(this, out performable);
+        if (performable)
+        {
+            action.PerformAction();
+            Destroy(actionObject);
+        }
+    }
 
     public static bool isEnemy(Vector3 currPos)
     {

@@ -85,13 +85,13 @@ public abstract class Action : MonoBehaviour
         Cursor.visible = true;
     }
 
-    public void SetTarget(Character character, out bool performable)
+    public void SetTarget(Character target, out bool performable)
     {
         if (_isSelfTargeted)
         {
-            if (character.gameObject.Equals(transform.parent.gameObject))
+            if (target.gameObject.Equals(transform.parent.gameObject))
             {
-                _target = character;
+                _target = target;
                 performable = true;
             }
             else
@@ -100,11 +100,16 @@ public abstract class Action : MonoBehaviour
                 performable = false;
             }
         }
+        else if (!_isDraggable)
+        {
+            _target = target;
+            performable = true;
+        }
         else if (_isEnemyTargeted)
         {
-            if (Character.isEnemy(character.transform.position))
+            if (Character.isEnemy(target.transform.position))
             {
-                _target = character;
+                _target = target;
                 performable = true;
             }
             else

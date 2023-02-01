@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Game
 {
@@ -15,28 +14,27 @@ public class Game
 
 public class ManagerOfGame : MonoBehaviour
 {
-    private static ManagerOfGame _instance;
     private List<GameObject> _charPrefabs;
     private Game _currentGame;
     private ManagerOfTurns _managerOfTurns;
 
     private void Awake()
     {
-        _instance = this;
-        _managerOfTurns = GetComponent<ManagerOfTurns>();
-
         CharManager.Init();
         ActionManager.Init();
         _charPrefabs = CharManager.PrefabManager.AllPrefabs;
 
         _currentGame = new Game();
+        _managerOfTurns = GetComponent<ManagerOfTurns>();
+        _managerOfTurns.SetGame(_currentGame);
+
         InitializeGame();
     }
 
     private void InitializeGame()
     {
         InstantCharacters(_currentGame.Allies, 2, true);
-        InstantCharacters(_currentGame.Enemies, 3, false);
+        InstantCharacters(_currentGame.Enemies, 2, false);
     }
 
     private void InstantCharacters(List<GameObject> list, int count, bool isAllies)
@@ -67,15 +65,5 @@ public class ManagerOfGame : MonoBehaviour
             Destroy(character);
         }
         list.Clear();
-    }
-
-    public static ManagerOfGame GetInstance()
-    {
-        return _instance;
-    }
-
-    public Game GetCurrentGame()
-    {
-        return _currentGame;
     }
 }
