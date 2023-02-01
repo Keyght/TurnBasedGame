@@ -7,6 +7,8 @@ public class Defence : Action
 
     public override void PerformAction()
     {
-        Health.ChangeHealth(_defenceValue, false);
+        Character.GetAnimator().SetTrigger("Defence");
+        Character.GetHealth().AddArmour(_defenceValue);
+        Character.Effects.Add(Effect.DEFENDED, 3);
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class Action : MonoBehaviour
 {
-    public Health Health;
+    public Character Character;
     [SerializeField]
     private GameObject _linePrefab;
     [SerializeField]

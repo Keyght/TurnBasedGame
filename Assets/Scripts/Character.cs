@@ -1,7 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
+
+public enum Effect
+{
+    POISONED,
+    DEFENDED
+}
 
 public class Character : MonoBehaviour, IHealthCange
 {
+    public Dictionary<Effect, int> Effects;
     [SerializeField]
     private int _maxHP = 10;
     [SerializeField]
@@ -15,6 +23,7 @@ public class Character : MonoBehaviour, IHealthCange
     private void Awake()
     {
         _health = new Health(_maxHP);
+        Effects = new Dictionary<Effect, int>();
 
         FlipOpponnents();
     }
@@ -50,7 +59,7 @@ public class Character : MonoBehaviour, IHealthCange
     {
         if (collision.gameObject.TryGetComponent(out Action action))
         {
-            action.Health = _health;
+            action.Character = this;
             action.PerformAction();
             Destroy(collision.gameObject);
         }
@@ -69,6 +78,11 @@ public class Character : MonoBehaviour, IHealthCange
     public Transform GetActionPoint()
     {
         return _actionPoint;
+    }
+
+    public Animator GetAnimator()
+    {
+        return _animCtrl;
     }
 
     private void OnDestroy()

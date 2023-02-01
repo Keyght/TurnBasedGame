@@ -14,6 +14,12 @@ public class Health
         _additionalHP = 0;
     }
 
+    public void AddArmour(int value)
+    {
+        _additionalHP += value;
+        InvokeChanges();
+    }
+
     public void ChangeHealth(int value, bool isDamage)
     {
         if (isDamage)
@@ -21,6 +27,8 @@ public class Health
             if (_additionalHP >= -1 * value)
             {
                 _additionalHP += value;
+                InvokeChanges();
+                return;
             }
             else
             {
@@ -41,9 +49,14 @@ public class Health
         }
         else
         {
-            float currentHealthAsPercantage = (float) _currentHP / _maxHP;
-            HealthChanged?.Invoke(_currentHP, _additionalHP, currentHealthAsPercantage);
+            InvokeChanges();
         }
+    }
+
+    private void InvokeChanges()
+    {
+        float currentHealthAsPercantage = (float)_currentHP / _maxHP;
+        HealthChanged?.Invoke(_currentHP, _additionalHP, currentHealthAsPercantage);
     }
 
     public void Death()
