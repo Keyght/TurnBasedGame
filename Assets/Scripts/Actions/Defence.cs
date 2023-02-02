@@ -1,34 +1,37 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Класс для действия защиты
+/// </summary>
 public class Defence : Action
 {
     [SerializeField]
-    protected static int _defenceValue = 2;
+    protected static int DefenceValue = 2;
     [SerializeField]
     private int _defenceTurns = 3;
 
     private new void Start()
     {
         base.Start();
-        _isSelfTargeted = true;
+        IsSelfTargeted = true;
     }
 
     public override void PerformAction()
     {
-        _target.GetAnimator().SetTrigger("Defence");
-        if (_target.Effects.ContainsKey(Effect.DEFENDED))
+        Target.GetAnimator().SetTrigger("Defence");
+        if (Target.Effects.ContainsKey(Effect.DEFENDED))
         {
-            _target.Effects[Effect.DEFENDED] += _defenceTurns;
+            Target.Effects[Effect.DEFENDED] += _defenceTurns;
         }
         else
         {
-            _target.Effects[Effect.DEFENDED] = _defenceTurns;
+            Target.Effects[Effect.DEFENDED] = _defenceTurns;
         }
-        _target.GetHealth().AddArmour(_defenceValue);
+        Target.GetHealth().AddArmour(DefenceValue);
     }
 
     public static int GetDefenceValue()
     {
-        return _defenceValue;
+        return DefenceValue;
     }
 }

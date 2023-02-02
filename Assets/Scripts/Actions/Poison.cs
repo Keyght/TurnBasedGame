@@ -1,33 +1,36 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Класс для действия отравления
+/// </summary>
 public class Poison : Action
 {
     [SerializeField]
-    protected static int _poisonValue = -1;
+    protected static int PoisonValue = -1;
     [SerializeField]
-    private int _poisonTunrs = 1;
+    protected int PoisonTunrs = 1;
 
     private new void Start()
     {
         base.Start();
-        _isEnemyTargeted = true;
+        IsEnemyTargeted = true;
     }
 
     public override void PerformAction()
     {
-        if (_target.Effects.ContainsKey(Effect.POISONED))
+        if (Target.Effects.ContainsKey(Effect.POISONED))
         {
-            _target.Effects[Effect.POISONED] += _poisonTunrs;
+            Target.Effects[Effect.POISONED] += PoisonTunrs;
         }
         else
         {
-            _target.Effects[Effect.POISONED] = _poisonTunrs;
+            Target.Effects[Effect.POISONED] = PoisonTunrs;
         }
-        _target.GetHealth().ChangeHealth(_poisonValue, _isAttacking);
+        Target.GetHealth().ChangeHealth(PoisonValue, IsAttacking);
     }
 
     public static int GetPoisonValue()
     {
-        return _poisonValue;
+        return PoisonValue;
     }
 }

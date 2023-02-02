@@ -1,7 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Класс для описания поведения персонажа
+/// </summary>
 public class Character : MonoBehaviour, IHealthCange
 {
     public event Action<bool> OnDeath;

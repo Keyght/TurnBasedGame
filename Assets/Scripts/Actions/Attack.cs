@@ -1,23 +1,26 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Класс для действия атаки
+/// </summary>
 public class Attack : Action
 {
     [SerializeField]
-    protected static int _attackValue = -3;
+    protected static int AttackValue = -3;
 
     private new void Start()
     {
         base.Start();
-        _isEnemyTargeted = true;
+        IsEnemyTargeted = true;
     }
 
     public override void PerformAction()
     {
-        _target.GetHealth().ChangeHealth(_attackValue, _isAttacking);
+        Target.GetHealth().ChangeHealth(AttackValue, IsAttacking);
     }
 
     public static int GetAttackValue()
     {
-        return _attackValue;
+        return AttackValue;
     }
 }

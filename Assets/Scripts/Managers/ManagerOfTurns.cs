@@ -1,8 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
+/// <summary>
+/// Класс для определения действий союзников и противников
+/// </summary>
 public class Turn
 {
     public List<GameObject> AllyActions, EnemyActions;
@@ -14,6 +17,9 @@ public class Turn
     }
 }
 
+/// <summary>
+/// Класс для управления ходами сторон
+/// </summary>
 public class ManagerOfTurns : MonoBehaviour
 {
     [SerializeField]
@@ -75,18 +81,18 @@ public class ManagerOfTurns : MonoBehaviour
         if (_isPlayerTurn)
         {
             ClearActions();
-            TickActions(_currentGame.Enemies);
+            TickEffects(_currentGame.Enemies);
             CreateActions(_currentGame.Allies, _currentTurn.AllyActions, true);
         }
         else
         {
             ClearActions();
-            TickActions(_currentGame.Allies);
+            TickEffects(_currentGame.Allies);
             CreateActions(_currentGame.Enemies, _currentTurn.EnemyActions, false);
         }
     }
 
-    private void TickActions(List<GameObject> persons)
+    private void TickEffects(List<GameObject> persons)
     {
         foreach (var pers in persons)
         {

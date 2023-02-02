@@ -1,9 +1,12 @@
-public enum Effect
+﻿public enum Effect
 {
     POISONED,
     DEFENDED
 }
 
+/// <summary>
+/// Статический класс для работы с эффектами
+/// </summary>
 public static class EffectHandler
 {
     public static void HandleEffect(Character character)

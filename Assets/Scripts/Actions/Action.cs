@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum Flag
 {
@@ -7,6 +7,9 @@ public enum Flag
     DEFENDING
 }
 
+/// <summary>
+/// Базовый класс для описания действий
+/// </summary>
 public abstract class Action : MonoBehaviour
 {
     public Flag Flag;
@@ -15,7 +18,7 @@ public abstract class Action : MonoBehaviour
     [SerializeField]
     private float _dragSensivity = 1.2f;
 
-    protected Character _target;
+    protected Character Target;
     private LineRenderer _line;
     private Camera _mainCamera;
     private Vector3 _mouseOffset;
@@ -23,10 +26,10 @@ public abstract class Action : MonoBehaviour
     private Vector3 _firstPos;
     private Renderer _meshRenderer;
     private Transform _childOther;
-    protected bool _isDraggable = false;
-    protected bool _isSelfTargeted = false;
-    protected bool _isEnemyTargeted = false;
-    protected bool _isAttacking
+    protected bool IsDraggable = false;
+    protected bool IsSelfTargeted = false;
+    protected bool IsEnemyTargeted = false;
+    protected bool IsAttacking
     {
         get
         {
@@ -45,7 +48,7 @@ public abstract class Action : MonoBehaviour
 
     protected void Start()
     {
-        if (!Character.isEnemy(transform.position)) _isDraggable = true;
+        if (!Character.isEnemy(transform.position)) IsDraggable = true;
     }
 
     private Vector3 GetMouseWorldPosition()
@@ -58,7 +61,7 @@ public abstract class Action : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!_isDraggable) return;
+        if (!IsDraggable) return;
 
         Cursor.visible = false;
         _line = Instantiate(_linePrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
@@ -75,7 +78,7 @@ public abstract class Action : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        if (!_isDraggable) return;
+        if (!IsDraggable) return;
 
         Vector3 newPos = (GetMouseWorldPosition() + _mouseOffset) * _dragSensivity;
         transform.position = new Vector3(newPos.x, _firstPos.y, newPos.z);
@@ -85,7 +88,7 @@ public abstract class Action : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (!_isDraggable) return;
+        if (!IsDraggable) return;
 
         gameObject.AddComponent<Rigidbody>();
         Destroy(_line.gameObject);
@@ -94,11 +97,11 @@ public abstract class Action : MonoBehaviour
 
     public void SetTarget(Character target, out bool performable)
     {
-        if (_isSelfTargeted)
+        if (IsSelfTargeted)
         {
             if (target.gameObject.Equals(transform.parent.gameObject))
             {
-                _target = target;
+                Target = target;
                 performable = true;
             }
             else
@@ -107,16 +110,16 @@ public abstract class Action : MonoBehaviour
                 performable = false;
             }
         }
-        else if (!_isDraggable)
+        else if (!IsDraggable)
         {
-            _target = target;
+            Target = target;
             performable = true;
         }
-        else if (_isEnemyTargeted)
+        else if (IsEnemyTargeted)
         {
             if (Character.isEnemy(target.transform.position))
             {
-                _target = target;
+                Target = target;
                 performable = true;
             }
             else

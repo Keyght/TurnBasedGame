@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Статический класс для заполнения менеджеров префабов
+/// </summary>
 public static class FillerForManagers
 {
     public static void FillManager(PrefabManager prefabManager)

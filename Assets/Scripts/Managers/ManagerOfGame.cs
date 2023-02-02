@@ -1,8 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Класс для определения союзников и противников
+/// </summary>
 public class Game
 {
     public List<GameObject> Allies, Enemies;
@@ -14,6 +17,9 @@ public class Game
     }
 }
 
+/// <summary>
+/// Класс для управления ходом игры
+/// </summary>
 public class ManagerOfGame : MonoBehaviour
 {
     [SerializeField]

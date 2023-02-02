@@ -1,3 +1,6 @@
+﻿/// <summary>
+/// Статический класс для хранения префабов всех персонажей
+/// </summary>
 public static class CharManager
 {
     public static PrefabManager PrefabManager;
