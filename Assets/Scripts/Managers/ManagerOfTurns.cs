@@ -61,12 +61,13 @@ public class ManagerOfTurns : MonoBehaviour
     public void RestartTurns()
     {
         _turn = 0;
-        ClearActions();        
+        ClearActions();
         ChangeTurn();
     }
 
     public void ChangeTurn()
     {
+        StopAllCoroutines();
         _turn++;
 
         _endTurnButton.interactable = _isPlayerTurn;
@@ -74,12 +75,22 @@ public class ManagerOfTurns : MonoBehaviour
         if (_isPlayerTurn)
         {
             ClearActions();
+            TickActions(_currentGame.Enemies);
             CreateActions(_currentGame.Allies, _currentTurn.AllyActions, true);
         }
         else
         {
             ClearActions();
+            TickActions(_currentGame.Allies);
             CreateActions(_currentGame.Enemies, _currentTurn.EnemyActions, false);
+        }
+    }
+
+    private void TickActions(List<GameObject> persons)
+    {
+        foreach (var pers in persons)
+        {
+            EffectHandler.HandleEffect(pers.GetComponent<Character>());
         }
     }
 
@@ -87,19 +98,23 @@ public class ManagerOfTurns : MonoBehaviour
     {
         foreach (var obj in charList)
         {
-            var actionPoint = obj.GetComponent<Character>().GetActionPoint();
-            if (isAlly)
+            var character = obj.GetComponent<Character>();
+            if (!character.IsDead)
             {
-                var currAction = Instantiate(_actionPrefabs[Random.Range(0, _actionPrefabs.Count)], actionPoint.position, Quaternion.identity);
-                currAction.transform.parent = obj.transform;
-                actionList.Add(currAction);
-            }
-            else
-            {
-                var currEnemyAction = Instantiate(_attackActionPrefabs[Random.Range(0, _attackActionPrefabs.Count)], actionPoint.position, actionPoint.rotation);
-                currEnemyAction.transform.parent = obj.transform;
-                currEnemyAction.GetComponent<Renderer>().material = _fadedMaterial;
-                actionList.Add(currEnemyAction);
+                var actionPoint = character.GetActionPoint();
+                if (isAlly)
+                {
+                    var currAction = Instantiate(_actionPrefabs[Random.Range(0, _actionPrefabs.Count)], actionPoint.position, Quaternion.identity);
+                    currAction.transform.parent = obj.transform;
+                    actionList.Add(currAction);
+                }
+                else
+                {
+                    var currEnemyAction = Instantiate(_attackActionPrefabs[Random.Range(0, _attackActionPrefabs.Count)], actionPoint.position, actionPoint.rotation);
+                    currEnemyAction.transform.parent = obj.transform;
+                    currEnemyAction.GetComponent<Renderer>().material = _fadedMaterial;
+                    actionList.Add(currEnemyAction);
+                }
             }
         }
     }
@@ -111,7 +126,7 @@ public class ManagerOfTurns : MonoBehaviour
         foreach (var act in _currentTurn.EnemyActions)
         {
             var target = DefineTargetForEnemy();
-            target.PerformingAction(act.GetComponent<Action>(), act);
+            if (target != null) target.PerformingAction(act.GetComponent<Action>(), act);
         }
 
         ChangeTurn();
@@ -164,7 +179,7 @@ public class ManagerOfTurns : MonoBehaviour
     public void OnEndButtonClick()
     {
         ChangeTurn();
-        StartCoroutine(EnemyTurn(3));
+        StartCoroutine(EnemyTurn(5));
     }
 
     public void SetGame(Game game)

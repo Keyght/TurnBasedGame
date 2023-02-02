@@ -3,7 +3,7 @@ using UnityEngine;
 public class Poison : Action
 {
     [SerializeField]
-    private int _poisonValue = -1;
+    protected static int _poisonValue = -1;
     [SerializeField]
     private int _poisonTunrs = 1;
 
@@ -23,6 +23,11 @@ public class Poison : Action
         {
             _target.Effects[Effect.POISONED] = _poisonTunrs;
         }
-        _target.GetHealth().ChangeHealth(_poisonValue, true);
+        _target.GetHealth().ChangeHealth(_poisonValue, _isAttacking);
+    }
+
+    public static int GetPoisonValue()
+    {
+        return _poisonValue;
     }
 }

@@ -17,7 +17,7 @@ public class HealthBar : MonoBehaviour, IHealthCange
 
     private Character _character;
     private Health _health;
-    
+
     private void Start()
     {
         _character = transform.parent.GetComponent<Character>();

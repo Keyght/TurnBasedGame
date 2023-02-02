@@ -26,6 +26,13 @@ public abstract class Action : MonoBehaviour
     protected bool _isDraggable = false;
     protected bool _isSelfTargeted = false;
     protected bool _isEnemyTargeted = false;
+    protected bool _isAttacking
+    {
+        get
+        {
+            return Flag == Flag.ATTACKING ? true : false;
+        }
+    }
 
     public abstract void PerformAction();
 

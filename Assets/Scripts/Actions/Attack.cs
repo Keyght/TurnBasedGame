@@ -3,7 +3,7 @@ using UnityEngine;
 public class Attack : Action
 {
     [SerializeField]
-    protected int _attackValue = -3;
+    protected static int _attackValue = -3;
 
     private new void Start()
     {
@@ -13,6 +13,11 @@ public class Attack : Action
 
     public override void PerformAction()
     {
-        _target.GetHealth().ChangeHealth(_attackValue, true);
+        _target.GetHealth().ChangeHealth(_attackValue, _isAttacking);
+    }
+
+    public static int GetAttackValue()
+    {
+        return _attackValue;
     }
 }

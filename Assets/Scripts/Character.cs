@@ -1,14 +1,10 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
-
-public enum Effect
-{
-    POISONED,
-    DEFENDED
-}
 
 public class Character : MonoBehaviour, IHealthCange
 {
+    public event Action<bool> OnDeath;
     public bool IsDead = false;
     public Dictionary<Effect, int> Effects;
     [SerializeField]
@@ -50,6 +46,7 @@ public class Character : MonoBehaviour, IHealthCange
             IsDead = true;
             _animCtrl.SetBool("isDead", true);
             _animCtrl.SetTrigger("Death");
+            OnDeath?.Invoke(IsDead);
         }
         else
         {
@@ -65,7 +62,7 @@ public class Character : MonoBehaviour, IHealthCange
         {
             PerformingAction(action, actionObject);
         }
-    } 
+    }
 
     public void PerformingAction(Action action, GameObject actionObject)
     {
@@ -80,7 +77,7 @@ public class Character : MonoBehaviour, IHealthCange
 
     public static bool isEnemy(Vector3 currPos)
     {
-        return currPos.z > 0 ? true: false;
+        return currPos.z > 0 ? true : false;
     }
 
     public Health GetHealth()

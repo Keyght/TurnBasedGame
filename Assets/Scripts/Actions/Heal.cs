@@ -3,7 +3,7 @@ using UnityEngine;
 public class Heal : Action
 {
     [SerializeField]
-    private int _healValue = 1;
+    protected static int _healValue = 1;
 
     private new void Start()
     {
@@ -15,6 +15,11 @@ public class Heal : Action
     {
         _target.GetAnimator().SetTrigger("Cast");
         _target.Effects.Remove(Effect.POISONED);
-        _target.GetHealth().ChangeHealth(_healValue, false);
+        _target.GetHealth().ChangeHealth(_healValue, _isAttacking);
+    }
+
+    public static int GetHealValue()
+    {
+        return _healValue;
     }
 }

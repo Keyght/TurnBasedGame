@@ -3,7 +3,7 @@ using UnityEngine;
 public class Defence : Action
 {
     [SerializeField]
-    private int _defenceValue = 2;
+    protected static int _defenceValue = 2;
     [SerializeField]
     private int _defenceTurns = 3;
 
@@ -25,5 +25,10 @@ public class Defence : Action
             _target.Effects[Effect.DEFENDED] = _defenceTurns;
         }
         _target.GetHealth().AddArmour(_defenceValue);
+    }
+
+    public static int GetDefenceValue()
+    {
+        return _defenceValue;
     }
 }

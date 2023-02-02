@@ -2,43 +2,52 @@ using System;
 
 public class Health
 {
+    public event Action<int, int, float> HealthChanged;
+
     private int _maxHP;
     private int _currentHP;
-    private int _additionalHP;
-    public event Action<int, int, float> HealthChanged;
+    private int _armour;
 
     public Health(int maxHP)
     {
         _maxHP = maxHP;
         _currentHP = maxHP;
-        _additionalHP = 0;
+        _armour = 0;
     }
 
     public void AddArmour(int value)
     {
-        _additionalHP += value;
+        _armour += value;
         InvokeChanges();
+    }
+
+    public int ReduceArmour(int value)
+    {
+        var rem = 0;
+        if (_armour >= -1 * value)
+        {
+            _armour += value;
+            InvokeChanges();
+        }
+        else
+        {
+            value += _armour;
+            rem = value;
+            _armour = 0;
+        }
+        return rem;
     }
 
     public void ChangeHealth(int value, bool isDamage)
     {
-        if (isDamage && _additionalHP != 0)
+        var rem = value;
+        if (isDamage && _armour != 0)
         {
-            if (_additionalHP >= -1 * value)
-            {
-                _additionalHP += value;
-                InvokeChanges();
-                return;
-            }
-            else
-            {
-                value += _additionalHP;
-                _additionalHP = 0;
-            }
+            rem = ReduceArmour(value);
         }
 
-        _currentHP += value;
-        
+        _currentHP += rem;
+
         if (_currentHP <= 0)
         {
             _currentHP = 0;
@@ -47,6 +56,7 @@ public class Health
         else if (_currentHP > _maxHP)
         {
             _currentHP = _maxHP;
+            InvokeChanges();
         }
         else
         {
@@ -57,7 +67,7 @@ public class Health
     private void InvokeChanges()
     {
         float currentHealthAsPercantage = (float)_currentHP / _maxHP;
-        HealthChanged?.Invoke(_currentHP, _additionalHP, currentHealthAsPercantage);
+        HealthChanged?.Invoke(_currentHP, _armour, currentHealthAsPercantage);
     }
 
     public void Death()
@@ -68,5 +78,10 @@ public class Health
     public int GetCurrentHP()
     {
         return _currentHP;
+    }
+
+    public int GetCurrentArmour()
+    {
+        return _armour;
     }
 }

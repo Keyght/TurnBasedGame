@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Game
 {
@@ -14,6 +16,13 @@ public class Game
 
 public class ManagerOfGame : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject _endCanvases;
+    [SerializeField]
+    private TextMeshProUGUI _winLoseText;
+    [SerializeField]
+    private Image _winLoseColor;
+
     private List<GameObject> _charPrefabs;
     private Game _currentGame;
     private ManagerOfTurns _managerOfTurns;
@@ -39,10 +48,11 @@ public class ManagerOfGame : MonoBehaviour
 
     private void InstantCharacters(List<GameObject> list, int count, bool isAllies)
     {
-        int side = isAllies ? 1 : -1; 
+        int side = isAllies ? 1 : -1;
         for (int i = 0; i < count; i++)
         {
             var currChar = Instantiate(_charPrefabs[Random.Range(0, _charPrefabs.Count)], new Vector3(-4f + i * 3, 0, -5 * side), Quaternion.identity);
+            currChar.GetComponent<Character>().OnDeath += OnCharacterDeath;
             list.Add(currChar);
         }
     }
@@ -51,6 +61,7 @@ public class ManagerOfGame : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
+            _endCanvases.SetActive(false);
             DestroyCurrentChars(_currentGame.Allies);
             DestroyCurrentChars(_currentGame.Enemies);
             InitializeGame();
@@ -58,10 +69,47 @@ public class ManagerOfGame : MonoBehaviour
         }
     }
 
+    private void OnCharacterDeath(bool isDead)
+    {
+        if (isDead)
+        {
+            if (CheckForDeaths(_currentGame.Allies))
+            {
+                _endCanvases.SetActive(true);
+                _winLoseText.text = "You Lose!";
+                _winLoseColor.color = Color.red;
+            }
+            else if (CheckForDeaths(_currentGame.Enemies))
+            {
+                _endCanvases.SetActive(true);
+                _winLoseText.text = "You Win!";
+                _winLoseColor.color = Color.green;
+            }
+        }
+    }
+
+    private bool CheckForDeaths(List<GameObject> persons)
+    {
+        int checker = 1;
+        foreach (var pers in persons)
+        {
+            if (pers.GetComponent<Character>().IsDead)
+            {
+                checker *= 1;
+            }
+            else
+            {
+                checker *= 0;
+            }
+        }
+        return checker == 1 ? true : false;
+    }
+
     private void DestroyCurrentChars(List<GameObject> list)
     {
         foreach (var character in list)
         {
+            character.GetComponent<Character>().OnDeath -= OnCharacterDeath;
             Destroy(character);
         }
         list.Clear();
