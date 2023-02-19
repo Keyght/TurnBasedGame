@@ -111,10 +111,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd688aae6ca6884789a52db5d5404eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Flag: 2
   _linePrefab: {fileID: 96369850693869566, guid: 3d768cbf806a3c949a21c5b4a845cd4d, type: 3}
   _dragSensivity: 1.2
-  _defenceValue: 2
+  _flag: 2
   _defenceTurns: 3
 --- !u!1 &741530052143649649
 GameObject:

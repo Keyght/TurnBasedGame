@@ -2412,6 +2412,7 @@ MonoBehaviour:
   _endCanvases: {fileID: 1864096952}
   _winLoseText: {fileID: 553930858}
   _winLoseColor: {fileID: 1378846917}
+  _numberOfCharactersOnSide: 2
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0

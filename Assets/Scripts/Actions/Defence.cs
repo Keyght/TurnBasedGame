@@ -1,37 +1,38 @@
 ﻿using UnityEngine;
 
-/// <summary>
-/// Класс для действия защиты
-/// </summary>
-public class Defence : Action
+namespace Actions
 {
-    [SerializeField]
-    protected static int DefenceValue = 2;
-    [SerializeField]
-    private int _defenceTurns = 3;
-
-    private new void Start()
+    /// <summary>
+    /// Класс для действия защиты
+    /// </summary>
+    public class Defence : BaseAction
     {
-        base.Start();
-        IsSelfTargeted = true;
-    }
+        [SerializeField] private int _defenceTurns = 3;
 
-    public override void PerformAction()
-    {
-        Target.GetAnimator().SetTrigger("Defence");
-        if (Target.Effects.ContainsKey(Effect.DEFENDED))
+        private static readonly int _defence = Animator.StringToHash("Defence");
+        private static int _defenceValue = 2;
+
+        public static int DefenceValue => _defenceValue;
+
+        private new void Start()
         {
-            Target.Effects[Effect.DEFENDED] += _defenceTurns;
+            base.Start();
+            IsSelfTargeted = true;
         }
-        else
-        {
-            Target.Effects[Effect.DEFENDED] = _defenceTurns;
-        }
-        Target.GetHealth().AddArmour(DefenceValue);
-    }
 
-    public static int GetDefenceValue()
-    {
-        return DefenceValue;
+        public override void PerformAction()
+        {
+            Target.AnimCtrl.SetTrigger(_defence);
+            if (Target.Effects.ContainsKey(Effect.Defended))
+            {
+                Target.Effects[Effect.Defended] += _defenceTurns;
+            }
+            else
+            {
+                Target.Effects[Effect.Defended] = _defenceTurns;
+            }
+
+            Target.Health.Armour.AddArmour(_defenceValue);
+        }
     }
 }

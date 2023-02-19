@@ -1,123 +1,129 @@
 ﻿using System.Collections.Generic;
+using Storage;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Класс для определения союзников и противников
-/// </summary>
-public class Game
+namespace Managers
 {
-    public List<GameObject> Allies, Enemies;
-
-    public Game()
+    /// <summary>
+    /// Класс для определения союзников и противников
+    /// </summary>
+    public class Game
     {
-        Allies = new List<GameObject>();
-        Enemies = new List<GameObject>();
-    }
-}
+        public List<GameObject> Allies, Enemies;
 
-/// <summary>
-/// Класс для управления ходом игры
-/// </summary>
-public class ManagerOfGame : MonoBehaviour
-{
-    [SerializeField]
-    private GameObject _endCanvases;
-    [SerializeField]
-    private TextMeshProUGUI _winLoseText;
-    [SerializeField]
-    private Image _winLoseColor;
-
-    private List<GameObject> _charPrefabs;
-    private Game _currentGame;
-    private ManagerOfTurns _managerOfTurns;
-
-    private void Awake()
-    {
-        CharManager.Init();
-        ActionManager.Init();
-        _charPrefabs = CharManager.PrefabManager.AllPrefabs;
-
-        _currentGame = new Game();
-        _managerOfTurns = GetComponent<ManagerOfTurns>();
-        _managerOfTurns.SetGame(_currentGame);
-
-        InitializeGame();
-    }
-
-    private void InitializeGame()
-    {
-        InstantCharacters(_currentGame.Allies, 2, true);
-        InstantCharacters(_currentGame.Enemies, 2, false);
-    }
-
-    private void InstantCharacters(List<GameObject> list, int count, bool isAllies)
-    {
-        int side = isAllies ? 1 : -1;
-        for (int i = 0; i < count; i++)
+        public Game()
         {
-            var currChar = Instantiate(_charPrefabs[Random.Range(0, _charPrefabs.Count)], new Vector3(-4f + i * 3, 0, -5 * side), Quaternion.identity);
-            currChar.GetComponent<Character>().OnDeath += OnCharacterDeath;
-            list.Add(currChar);
+            Allies = new List<GameObject>();
+            Enemies = new List<GameObject>();
         }
     }
 
-    private void Update()
+    /// <summary>
+    /// Класс для управления ходом игры
+    /// </summary>
+    public class ManagerOfGame : MonoBehaviour
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        [SerializeField]
+        private GameObject _endCanvases;
+        [SerializeField]
+        private TextMeshProUGUI _winLoseText;
+        [SerializeField]
+        private Image _winLoseColor;
+        [SerializeField]
+        private int _numberOfCharactersOnSide;
+
+        private List<GameObject> _charPrefabs;
+        private Game _currentGame;
+        private ManagerOfTurns _managerOfTurns;
+
+        private void Awake()
         {
-            _endCanvases.SetActive(false);
-            DestroyCurrentChars(_currentGame.Allies);
-            DestroyCurrentChars(_currentGame.Enemies);
+            CharStorage.Init();
+            ActionStorage.Init();
+            _charPrefabs = CharStorage.PrefabStorage.AllPrefabs;
+
+            _currentGame = new Game();
+            _managerOfTurns = GetComponent<ManagerOfTurns>();
+            _managerOfTurns.SetGame(_currentGame);
+
             InitializeGame();
-            _managerOfTurns.RestartTurns();
         }
-    }
 
-    private void OnCharacterDeath(bool isDead)
-    {
-        if (isDead)
+        private void InitializeGame()
         {
-            if (CheckForDeaths(_currentGame.Allies))
-            {
-                _endCanvases.SetActive(true);
-                _winLoseText.text = "You Lose!";
-                _winLoseColor.color = Color.red;
-            }
-            else if (CheckForDeaths(_currentGame.Enemies))
-            {
-                _endCanvases.SetActive(true);
-                _winLoseText.text = "You Win!";
-                _winLoseColor.color = Color.green;
-            }
+            InstantCharacters(_currentGame.Allies, _numberOfCharactersOnSide, true);
+            InstantCharacters(_currentGame.Enemies, _numberOfCharactersOnSide, false);
         }
-    }
 
-    private bool CheckForDeaths(List<GameObject> persons)
-    {
-        int checker = 1;
-        foreach (var pers in persons)
+        private void InstantCharacters(List<GameObject> list, int count, bool isAllies)
         {
-            if (pers.GetComponent<Character>().IsDead)
+            int side = isAllies ? 1 : -1;
+            for (int i = 0; i < count; i++)
             {
-                checker *= 1;
-            }
-            else
-            {
-                checker *= 0;
+                var currChar = Instantiate(_charPrefabs[Random.Range(0, _charPrefabs.Count)], new Vector3(-4f + i * 3, 0, -5 * side), Quaternion.identity);
+                currChar.GetComponent<Character>().OnDeath += OnCharacterDeath;
+                list.Add(currChar);
             }
         }
-        return checker == 1 ? true : false;
-    }
 
-    private void DestroyCurrentChars(List<GameObject> list)
-    {
-        foreach (var character in list)
+        private void Update()
         {
-            character.GetComponent<Character>().OnDeath -= OnCharacterDeath;
-            Destroy(character);
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                _endCanvases.SetActive(false);
+                DestroyCurrentChars(_currentGame.Allies);
+                DestroyCurrentChars(_currentGame.Enemies);
+                InitializeGame();
+                _managerOfTurns.RestartTurns();
+            }
         }
-        list.Clear();
+
+        private void OnCharacterDeath(bool isDead)
+        {
+            if (isDead)
+            {
+                if (CheckForDeaths(_currentGame.Allies))
+                {
+                    _endCanvases.SetActive(true);
+                    _winLoseText.text = "You Lose!";
+                    _winLoseColor.color = Color.red;
+                }
+                else if (CheckForDeaths(_currentGame.Enemies))
+                {
+                    _endCanvases.SetActive(true);
+                    _winLoseText.text = "You Win!";
+                    _winLoseColor.color = Color.green;
+                }
+            }
+        }
+
+        private static bool CheckForDeaths(List<GameObject> persons)
+        {
+            int checker = 1;
+            foreach (var pers in persons)
+            {
+                if (pers.GetComponent<Character>().IsDead)
+                {
+                    checker *= 1;
+                }
+                else
+                {
+                    checker *= 0;
+                }
+            }
+            return checker == 1;
+        }
+
+        private void DestroyCurrentChars(List<GameObject> list)
+        {
+            foreach (var character in list)
+            {
+                character.GetComponent<Character>().OnDeath -= OnCharacterDeath;
+                Destroy(character);
+            }
+            list.Clear();
+        }
     }
 }

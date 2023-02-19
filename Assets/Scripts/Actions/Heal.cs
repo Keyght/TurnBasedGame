@@ -1,28 +1,28 @@
 ﻿using UnityEngine;
 
-/// <summary>
-/// Класс для действия лечения
-/// </summary>
-public class Heal : Action
+namespace Actions
 {
-    [SerializeField]
-    protected static int HealValue = 1;
-
-    private new void Start()
+    /// <summary>
+    /// Класс для действия лечения
+    /// </summary>
+    public class Heal : BaseAction
     {
-        base.Start();
-        IsSelfTargeted = true;
-    }
+        private static readonly int _cast = Animator.StringToHash("Cast");
+        private static int _healValue = 1;
 
-    public override void PerformAction()
-    {
-        Target.GetAnimator().SetTrigger("Cast");
-        Target.Effects.Remove(Effect.POISONED);
-        Target.GetHealth().ChangeHealth(HealValue, IsAttacking);
-    }
+        public static int HealValue => _healValue;
 
-    public static int GetHealValue()
-    {
-        return HealValue;
+        private new void Start()
+        {
+            base.Start();
+            IsSelfTargeted = true;
+        }
+
+        public override void PerformAction()
+        {
+            Target.AnimCtrl.SetTrigger(_cast);
+            Target.Effects.Remove(Effect.Poisoned);
+            Target.Health.ChangeHealth(_healValue, IsAttacking);
+        }
     }
 }

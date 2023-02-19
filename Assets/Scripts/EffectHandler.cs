@@ -1,7 +1,10 @@
-﻿public enum Effect
+﻿using Actions;
+using UnityEngine;
+
+public enum Effect
 {
-    POISONED,
-    DEFENDED
+    Poisoned,
+    Defended
 }
 
 /// <summary>
@@ -9,32 +12,37 @@
 /// </summary>
 public static class EffectHandler
 {
+    private static readonly int _defence = Animator.StringToHash("Defence");
+    private static readonly int _idle = Animator.StringToHash("Idle");
+
     public static void HandleEffect(Character character)
     {
-        if (character.Effects.ContainsKey(Effect.DEFENDED))
+        if (character.Effects.ContainsKey(Effect.Defended))
         {
-            character.Effects[Effect.DEFENDED] -= 1;
-            if (character.Effects[Effect.DEFENDED] == 0 || character.GetHealth().GetCurrentArmour() == 0)
+            character.Effects[Effect.Defended] -= 1;
+            if (character.Effects[Effect.Defended] == 0 || character.Health.Armour.Value == 0)
             {
-                character.GetHealth().ReduceArmour(-1 * Defence.GetDefenceValue());
-                character.Effects.Remove(Effect.DEFENDED);
-                character.GetAnimator().ResetTrigger("Defence");
-                character.GetAnimator().SetTrigger("Idle");
+                character.Health.Armour.ReduceArmour(-1 * Defence.DefenceValue);
+                character.Effects.Remove(Effect.Defended);
+                character.AnimCtrl.ResetTrigger(_defence);
+                character.AnimCtrl.SetTrigger(_idle);
             }
-            else if (character.Effects[Effect.DEFENDED] != 0 && character.GetHealth().GetCurrentArmour() != 0)
+            else if (character.Effects[Effect.Defended] != 0 && character.Health.Armour.Value != 0)
             {
-                character.GetAnimator().ResetTrigger("Idle");
-                character.GetAnimator().SetTrigger("Defence");
+                character.AnimCtrl.ResetTrigger(_idle);
+                character.AnimCtrl.SetTrigger(_defence);
             }
         }
-        if (character.Effects.ContainsKey(Effect.POISONED))
+
+        if (character.Effects.ContainsKey(Effect.Poisoned))
         {
-            character.Effects[Effect.POISONED] -= 1;
-            if (character.Effects[Effect.POISONED] == 0)
+            character.Effects[Effect.Poisoned] -= 1;
+            if (character.Effects[Effect.Poisoned] == 0)
             {
-                character.Effects.Remove(Effect.POISONED);
+                character.Effects.Remove(Effect.Poisoned);
             }
-            character.GetHealth().ChangeHealth(Poison.GetPoisonValue(), true);
+
+            character.Health.ChangeHealth(Poison.PoisonValue, true);
         }
     }
 }

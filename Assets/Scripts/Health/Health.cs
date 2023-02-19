@@ -1,87 +1,63 @@
 using System;
 
-public class Health
+namespace Health
 {
-    public event Action<int, int, float> HealthChanged;
-
-    private int _maxHP;
-    private int _currentHP;
-    private int _armour;
-
-    public Health(int maxHP)
+    public class Health
     {
-        _maxHP = maxHP;
-        _currentHP = maxHP;
-        _armour = 0;
-    }
+        public event Action<int, int, float> HealthChanged;
 
-    public void AddArmour(int value)
-    {
-        _armour += value;
-        InvokeChanges();
-    }
+        private int _maxHp;
+        private int _currentHp;
+        private Armour _armour;
 
-    public int ReduceArmour(int value)
-    {
-        var rem = 0;
-        if (_armour >= -1 * value)
+        public int CurrentHp => _currentHp;
+        public Armour Armour => _armour;
+
+        public Health(int maxHp)
         {
-            _armour += value;
-            InvokeChanges();
-        }
-        else
-        {
-            value += _armour;
-            rem = value;
-            _armour = 0;
-        }
-        return rem;
-    }
-
-    public void ChangeHealth(int value, bool isDamage)
-    {
-        var rem = value;
-        if (isDamage && _armour != 0)
-        {
-            rem = ReduceArmour(value);
+            _maxHp = maxHp;
+            _currentHp = maxHp;
+            _armour = new Armour
+            {
+                InvokeChanges = InvokeChanges
+            };
         }
 
-        _currentHP += rem;
-
-        if (_currentHP <= 0)
+        public void ChangeHealth(int value, bool isDamage)
         {
-            _currentHP = 0;
-            Death();
+            var rem = value;
+            if (isDamage && _armour.Value != 0)
+            {
+                rem = Armour.ReduceArmour(value);
+            }
+
+            _currentHp += rem;
+
+            if (_currentHp <= 0)
+            {
+                _currentHp = 0;
+                Death();
+            }
+            else if (_currentHp > _maxHp)
+            {
+                _currentHp = _maxHp;
+                InvokeChanges();
+            }
+            else
+            {
+                InvokeChanges();
+            }
         }
-        else if (_currentHP > _maxHP)
+
+        private void InvokeChanges()
         {
-            _currentHP = _maxHP;
-            InvokeChanges();
+            var currentHealthAsPercantage = (float)_currentHp / _maxHp;
+            HealthChanged?.Invoke(_currentHp, _armour.Value, currentHealthAsPercantage);
         }
-        else
+
+        private void Death()
         {
-            InvokeChanges();
+            HealthChanged?.Invoke(0, 0, 0);
         }
-    }
-
-    private void InvokeChanges()
-    {
-        float currentHealthAsPercantage = (float)_currentHP / _maxHP;
-        HealthChanged?.Invoke(_currentHP, _armour, currentHealthAsPercantage);
-    }
-
-    public void Death()
-    {
-        HealthChanged?.Invoke(0, 0, 0);
-    }
-
-    public int GetCurrentHP()
-    {
-        return _currentHP;
-    }
-
-    public int GetCurrentArmour()
-    {
-        return _armour;
     }
 }

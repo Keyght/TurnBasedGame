@@ -1,4 +1,7 @@
-public interface IHealthCange
+namespace Health
 {
-    public abstract void OnHealthChanged(int currentHealth, int currentAdditionalHealth, float currentHealthAsPercantage);
+    public interface IHealthCange
+    {
+        void OnHealthChanged(int currentHealth, int currentAdditionalHealth, float currentHealthAsPercantage);
+    }
 }

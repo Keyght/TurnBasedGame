@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _healthBarFilling: {fileID: 7317685052860319987}
-  _PoisonIcon: {fileID: 6254006779220407262}
+  _poisonIcon: {fileID: 6254006779220407262}
   _healthCount: {fileID: 640856602069743098}
   _additionalHealthCount: {fileID: 2982445039072852851}
   _gradient:
